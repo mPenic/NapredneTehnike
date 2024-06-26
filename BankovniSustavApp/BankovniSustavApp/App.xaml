@@ -1,0 +1,17 @@
+﻿<Application x:Class="BankovniSustavApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:BankovniSustavApp"
+             xmlns:services="clr-namespace:BankovniSustavApp.Services">
+    <Application.Resources>
+        <services:ViewModelLocator x:Key="ViewModelLocator"/>
+        <Style x:Key="PlaceholderTextBox" TargetType="TextBox">
+            <Setter Property="Foreground" Value="Gray"/>
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Foreground" Value="LightGray"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Application.Resources>
+</Application>
