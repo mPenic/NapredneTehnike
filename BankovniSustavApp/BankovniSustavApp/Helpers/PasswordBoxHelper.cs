@@ -91,7 +91,19 @@ namespace BankovniSustavApp.Helpers
 
         public static SecureString Copy(this SecureString secureString)
         {
-            return secureString.Copy();
+            if (secureString == null)
+            {
+                throw new ArgumentNullException(nameof(secureString));
+            }
+
+            SecureString copy = new SecureString();
+            foreach (char c in secureString.ToInsecureString())
+            {
+                copy.AppendChar(c);
+            }
+            copy.MakeReadOnly();
+            return copy;
         }
+
     }
 }

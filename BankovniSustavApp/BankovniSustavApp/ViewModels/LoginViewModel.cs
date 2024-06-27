@@ -49,30 +49,19 @@ namespace BankovniSustavApp.ViewModels
 
         public async Task ExecuteLogin()
         {
-            IntPtr unmanagedString = IntPtr.Zero;
-            try
+            string password = SecureStringToString(SecurePassword);
+
+            Console.WriteLine($"Entered Password: {password}");
+
+            var korisnik = await _userAccountService.AuthenticateUserAsync(Email, password);
+            if (korisnik != null)
             {
-                unmanagedString = System.Runtime.InteropServices.Marshal.SecureStringToGlobalAllocUnicode(SecurePassword);
-                var password = System.Runtime.InteropServices.Marshal.PtrToStringUni(unmanagedString);
-
-                Console.WriteLine($"Entered Password: {password}");
-
-                VerifySecurePassword(); // Add this line to check the conversion
-
-                var korisnik = await _userAccountService.AuthenticateUserAsync(Email, password);
-                if (korisnik != null)
-                {
-                    Console.WriteLine("Login successful.");
-                    _navigationService.NavigateToDashboard();
-                }
-                else
-                {
-                    MessageBox.Show("Login failed. Please check your email and password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
+                Console.WriteLine("Login successful.");
+                _navigationService.NavigateToDashboard();
             }
-            finally
+            else
             {
-                System.Runtime.InteropServices.Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+                MessageBox.Show("Login failed. Please check your email and password.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 
@@ -81,14 +70,13 @@ namespace BankovniSustavApp.ViewModels
             return !string.IsNullOrEmpty(_email) && _securePassword != null && _securePassword.Length > 0;
         }
 
-        private void VerifySecurePassword()
+        private string SecureStringToString(SecureString secureString)
         {
             IntPtr unmanagedString = IntPtr.Zero;
             try
             {
-                unmanagedString = System.Runtime.InteropServices.Marshal.SecureStringToGlobalAllocUnicode(SecurePassword);
-                var password = System.Runtime.InteropServices.Marshal.PtrToStringUni(unmanagedString);
-                Console.WriteLine($"SecurePassword converted to: {password}");
+                unmanagedString = System.Runtime.InteropServices.Marshal.SecureStringToGlobalAllocUnicode(secureString);
+                return System.Runtime.InteropServices.Marshal.PtrToStringUni(unmanagedString);
             }
             finally
             {

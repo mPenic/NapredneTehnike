@@ -22,5 +22,15 @@ namespace BankovniSustavApp
             InitializeComponent();
             this.DataContext = registerViewModel;
         }
+
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (this.DataContext is RegisterViewModel registerViewModel)
+            {
+                var passwordBox = (PasswordBox)sender;
+                registerViewModel.Lozinka = passwordBox.SecurePassword.Copy();
+                Console.WriteLine($"PasswordBox changed, SecurePassword updated in ViewModel. Password length: {registerViewModel.Lozinka.Length}");
+            }
+        }
     }
 }

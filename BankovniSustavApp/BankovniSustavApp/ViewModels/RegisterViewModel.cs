@@ -15,7 +15,6 @@ namespace BankovniSustavApp.ViewModels
     {
         private readonly IUserAccountService _userAccountService;
         private readonly INavigationService _navigationService;
-       
 
         public string Ime { get; set; }
         public string Prezime { get; set; }
@@ -32,16 +31,26 @@ namespace BankovniSustavApp.ViewModels
             RegisterUserCommand = new RelayCommand(async () => await RegisterUserExecute());
             NavigateToLoginCommand = new RelayCommand(NavigateToLoginExecute);
         }
+
         private void NavigateToLoginExecute()
         {
             _navigationService.NavigateToLogin();
         }
+
         private async Task RegisterUserExecute()
         {
             try
             {
                 // Convert SecureString to string for Lozinka
-                var lozinka = new System.Net.NetworkCredential(string.Empty, Lozinka).Password;
+                var lozinka = ConvertSecureStringToString(Lozinka);
+                Console.WriteLine($"Converted Lozinka: {lozinka}");
+
+                if (string.IsNullOrEmpty(lozinka))
+                {
+                    MessageBox.Show("Password cannot be empty.", "Error");
+                    return;
+                }
+
                 var newUser = new Korisnik
                 {
                     Ime = this.Ime,
@@ -52,6 +61,14 @@ namespace BankovniSustavApp.ViewModels
                     Status = "Active" // Assuming default status is "Active"
                 };
 
+                Console.WriteLine($"New User: {newUser.Ime}, {newUser.Prezime}, {newUser.Email}, {newUser.Lozinka}");
+
+                if (string.IsNullOrEmpty(newUser.Ime) || string.IsNullOrEmpty(newUser.Prezime) || string.IsNullOrEmpty(newUser.Email) || string.IsNullOrEmpty(newUser.Lozinka))
+                {
+                    MessageBox.Show("All fields must be filled.", "Error");
+                    return;
+                }
+
                 var result = await _userAccountService.RegisterUserAsync(newUser);
                 if (result)
                 {
@@ -60,12 +77,31 @@ namespace BankovniSustavApp.ViewModels
                 }
                 else
                 {
-                    //
+                    MessageBox.Show("Registration failed", "Error");
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"An error occurred: {ex.Message}", "Error");
+            }
+        }
+
+        private string ConvertSecureStringToString(SecureString secureString)
+        {
+            if (secureString == null || secureString.Length == 0)
+            {
+                return null;
+            }
+
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = System.Runtime.InteropServices.Marshal.SecureStringToGlobalAllocUnicode(secureString);
+                return System.Runtime.InteropServices.Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                System.Runtime.InteropServices.Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
             }
         }
     }

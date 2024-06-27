@@ -95,18 +95,16 @@ namespace BankovniSustavApp.Repositories
 
         public async Task<bool> AddAsync(Korisnik korisnik)
         {
-           
-                if (string.IsNullOrEmpty(korisnik.Ime))
-                {
-                    return false;
-                }
-                string query = @"INSERT INTO korisnici 
-                         (Ime, Prezime, Email, Lozinka, DatumRegistracije, Status) 
-                         VALUES 
-                         (@ime, @prezime, @email, @lozinka, @datumRegistracije, @status);";
-                using (var connection = _dbHelper.CreateConnection())
-                {
-
+            if (string.IsNullOrEmpty(korisnik.Ime))
+            {
+                return false;
+            }
+            string query = @"INSERT INTO korisnici 
+                     (Ime, Prezime, Email, Lozinka, DatumRegistracije, Status) 
+                     VALUES 
+                     (@ime, @prezime, @email, @lozinka, @datumRegistracije, @status);";
+            using (var connection = _dbHelper.CreateConnection())
+            {
                 using (var command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@ime", korisnik.Ime);
@@ -121,23 +119,24 @@ namespace BankovniSustavApp.Repositories
                     try
                     {
                         var result = await command.ExecuteNonQueryAsync();
-                        MessageBox.Show("User already exsists", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                         return result == 1;
                     }
                     catch (MySqlException ex) when (ex.Number == 1062) // MySQL error code for duplicate entry
                     {
                         // Handle the duplicate entry case
-                        
+                        MessageBox.Show("User already exists", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                     catch (MySqlException ex)
                     {
                         // Handle other database-related errors
+                        MessageBox.Show($"Database error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         return false;
                     }
                 }
             }
         }
+
 
         public async Task<bool> UpdateAsync(Korisnik korisnik)
         {
