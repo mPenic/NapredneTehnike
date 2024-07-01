@@ -16,58 +16,55 @@ public class LogoviDataAccess
         _jsonFilePath = jsonFilePath;
     }
 
-    public List<Logovi> ReadXmlData()
+    public void AddTransactionLog(Logovi log)
+    {
+        List<Logovi> data = ReadJsonData();
+        data.Add(log);
+        WriteJsonData(data);
+    }
+
+    public void AddAccountLog(Logovi log)
+    {
+        List<Logovi> data = ReadXmlData();
+        data.Add(log);
+        WriteXmlData(data);
+    }
+
+    private List<Logovi> ReadXmlData()
     {
         if (!File.Exists(_xmlFilePath))
         {
             return new List<Logovi>();
         }
-
-        using (var stream = new FileStream(_xmlFilePath, FileMode.Open))
+        var serializer = new XmlSerializer(typeof(List<Logovi>));
+        using (var reader = new FileStream(_xmlFilePath, FileMode.Open))
         {
-            var serializer = new XmlSerializer(typeof(List<Logovi>));
-            return (List<Logovi>)serializer.Deserialize(stream);
+            return (List<Logovi>)serializer.Deserialize(reader);
         }
     }
 
-    public void WriteXmlData(List<Logovi> data)
+    private void WriteXmlData(List<Logovi> data)
     {
-        using (var stream = new FileStream(_xmlFilePath, FileMode.Create))
+        var serializer = new XmlSerializer(typeof(List<Logovi>));
+        using (var writer = new FileStream(_xmlFilePath, FileMode.Create))
         {
-            var serializer = new XmlSerializer(typeof(List<Logovi>));
-            serializer.Serialize(stream, data);
+            serializer.Serialize(writer, data);
         }
     }
 
-    public List<Logovi> ReadJsonData()
+    private List<Logovi> ReadJsonData()
     {
         if (!File.Exists(_jsonFilePath))
         {
             return new List<Logovi>();
         }
-
         var jsonData = File.ReadAllText(_jsonFilePath);
         return JsonConvert.DeserializeObject<List<Logovi>>(jsonData);
     }
 
-    public void WriteJsonData(List<Logovi> data)
+    private void WriteJsonData(List<Logovi> data)
     {
         var jsonData = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(_jsonFilePath, jsonData);
-    }
-
-    public void AddLog(Logovi log, string format = "xml")
-    {
-        List<Logovi> data = format.ToLower() == "json" ? ReadJsonData() : ReadXmlData();
-        data.Add(log);
-
-        if (format.ToLower() == "json")
-        {
-            WriteJsonData(data);
-        }
-        else
-        {
-            WriteXmlData(data);
-        }
     }
 }

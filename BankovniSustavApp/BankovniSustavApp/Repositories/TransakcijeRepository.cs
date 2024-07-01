@@ -124,7 +124,7 @@ namespace BankovniSustavApp.Repositories
                             if (updateResult > 0)
                             {
                                 await transaction.CommitAsync();
-                                AddLog("Added transaction", "json");
+                                AddLog("Added transaction");
                                 return true;
                             }
                         }
@@ -163,7 +163,7 @@ namespace BankovniSustavApp.Repositories
 
                     if (result > 0)
                     {
-                        AddLog("Updated transaction", "xml");
+                        AddLog("Updated transaction");
                     }
 
                     return result > 0;
@@ -186,7 +186,7 @@ namespace BankovniSustavApp.Repositories
 
                     if (result > 0)
                     {
-                        AddLog("Deleted transaction", "xml");
+                        AddLog("Deleted transaction");
                     }
 
                     return result > 0;
@@ -194,7 +194,7 @@ namespace BankovniSustavApp.Repositories
             }
         }
 
-        private void AddLog(string action, string format)
+        private void AddLog(string action)
         {
             var log = new Logovi
             {
@@ -204,7 +204,7 @@ namespace BankovniSustavApp.Repositories
                 Opis = action,
                 Operation = action
             };
-            _logoviDataAccess.AddLog(log, format);
+            _logoviDataAccess.AddTransactionLog(log);
         }
     }
 }

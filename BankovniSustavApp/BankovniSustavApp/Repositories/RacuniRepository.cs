@@ -153,7 +153,7 @@ namespace BankovniSustavApp.Repositories
 
                     if (result > 0)
                     {
-                        AddLog("Added account", "json");
+                        AddLog("Added account");
                     }
 
                     return result > 0;
@@ -181,7 +181,7 @@ namespace BankovniSustavApp.Repositories
 
                     if (result > 0)
                     {
-                        AddLog("Updated account", "json");
+                        AddLog("Updated account");
                     }
 
                     return result > 0;
@@ -203,7 +203,7 @@ namespace BankovniSustavApp.Repositories
 
                     if (result > 0)
                     {
-                        AddLog("Deleted account", "json");
+                        AddLog("Deleted account");
                     }
 
                     return result > 0;
@@ -211,7 +211,7 @@ namespace BankovniSustavApp.Repositories
             }
         }
 
-        private void AddLog(string action, string format)
+        private void AddLog(string action)
         {
             var log = new Logovi
             {
@@ -221,7 +221,7 @@ namespace BankovniSustavApp.Repositories
                 Opis = action,
                 Operation = action
             };
-            _logoviDataAccess.AddLog(log, format);
+            _logoviDataAccess.AddAccountLog(log);
         }
     }
 }
