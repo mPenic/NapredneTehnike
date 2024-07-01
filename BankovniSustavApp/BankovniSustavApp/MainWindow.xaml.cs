@@ -67,9 +67,6 @@ namespace BankovniSustavApp
             }
         }
 
-
-
-
         private async void TestDatabaseConnection()
         {
             DatabaseHelper dbHelper = new DatabaseHelper();

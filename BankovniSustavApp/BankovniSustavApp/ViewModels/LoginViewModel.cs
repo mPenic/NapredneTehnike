@@ -1,20 +1,22 @@
 ﻿using BankovniSustavApp.Commands;
 using BankovniSustavApp.Services;
+using BankovniSustavApp.Helpers;
 using System;
 using System.Security;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Navigation;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace BankovniSustavApp.ViewModels
 {
-    public class LoginViewModel
+    public class LoginViewModel : INotifyPropertyChanged
     {
         private readonly IUserAccountService _userAccountService;
         private string _email;
         private SecureString _securePassword;
-        private readonly INavigationService _navigationService; // Action delegate to navigate to the RegisterWindow.
+        private readonly INavigationService _navigationService;
 
         public ICommand LoginCommand { get; }
         public ICommand NavigateToRegisterCommand { get; }
@@ -22,7 +24,7 @@ namespace BankovniSustavApp.ViewModels
         public LoginViewModel(IUserAccountService userAccountService, INavigationService navigationService)
         {
             _userAccountService = userAccountService;
-            _navigationService = navigationService; // Assign the passed-in delegate.
+            _navigationService = navigationService;
             LoginCommand = new RelayCommand(async () => await ExecuteLogin(), CanExecuteLogin);
             NavigateToRegisterCommand = new RelayCommand(() => _navigationService.NavigateToRegister());
         }
@@ -33,7 +35,7 @@ namespace BankovniSustavApp.ViewModels
             set
             {
                 _email = value;
-                // OnPropertyChanged(nameof(Email)); // Uncomment when OnPropertyChanged is implemented
+                OnPropertyChanged();
             }
         }
 
@@ -43,11 +45,11 @@ namespace BankovniSustavApp.ViewModels
             set
             {
                 _securePassword = value;
-                // OnPropertyChanged(nameof(SecurePassword)); // Uncomment when OnPropertyChanged is implemented
+                OnPropertyChanged();
             }
         }
 
-        public async Task ExecuteLogin()
+        private async Task ExecuteLogin()
         {
             string password = SecureStringToString(SecurePassword);
 
@@ -57,6 +59,7 @@ namespace BankovniSustavApp.ViewModels
             if (korisnik != null)
             {
                 Console.WriteLine("Login successful.");
+                await SessionManager.SetCurrentKorisnikIdByEmailAsync(Email);
                 _navigationService.NavigateToDashboard();
             }
             else
@@ -82,6 +85,13 @@ namespace BankovniSustavApp.ViewModels
             {
                 System.Runtime.InteropServices.Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

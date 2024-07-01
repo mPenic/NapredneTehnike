@@ -116,6 +116,7 @@ C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Runt
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Threading.Tasks.Extensions.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.AssemblyReference.cache
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.SuggestedBindingRedirects.cache
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.g.cs
@@ -125,7 +126,6 @@ C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSus
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp_MarkupCompile.lref
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\App.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.baml
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.g.resources
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.Properties.Resources.resources

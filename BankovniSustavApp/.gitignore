@@ -1,0 +1,77 @@
+# Ignore Visual Studio temporary files, build results, and
+# folder settings
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignore build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Ignore NuGet Packages
+*.nupkg
+packages/
+*.snupkg
+.nuget/
+
+# Ignore Resharper files
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Ignore Rider IDE files
+.idea/
+
+# Ignore JetBrains Rider DotNetCore project files
+.idea/
+*.sln.iml
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore backup files
+*.bak
+
+# Ignore dump files
+*.dmp
+
+# Ignore build logs
+*.log
+*.tlog
+*.vlog
+
+# Ignore Test Results
+[Tt]est[Rr]esult*/ 
+[Bb]uild[Ll]og.*
+_TestProject*/
+
+# Ignore the publish directory
+[Pp]ublish/
+
+# Ignore User-specific files
+*.rsuser
+*.rsuser
+
+# Ignore coverage analysis tool directories
+coverage/
+
+# Ignore Python compiled files
+*.pyc
+__pycache__/
+
+# Ignore other directories
+ipch/
+obj/
+analyze/

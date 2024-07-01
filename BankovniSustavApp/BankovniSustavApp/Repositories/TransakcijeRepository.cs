@@ -2,18 +2,21 @@
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Data;
 using BankovniSustavApp.DataAccess;
+using BankovniSustavApp.Helpers;
+using System;
 
 namespace BankovniSustavApp.Repositories
 {
     public class TransakcijeRepository : IGenericRepository<Transakcije>
     {
         private readonly DatabaseHelper _dbHelper;
+        private readonly LogoviDataAccess _logoviDataAccess;
 
-        public TransakcijeRepository(DatabaseHelper dbHelper)
+        public TransakcijeRepository(DatabaseHelper dbHelper, LogoviDataAccess logoviDataAccess)
         {
             _dbHelper = dbHelper;
+            _logoviDataAccess = logoviDataAccess;
         }
 
         public async Task<IEnumerable<Transakcije>> GetAllAsync()
@@ -42,15 +45,15 @@ namespace BankovniSustavApp.Repositories
                                 DatumVrijeme = reader.GetDateTime(datumVrijemeOrdinal),
                                 Iznos = reader.GetDecimal(iznosOrdinal),
                                 Vrsta = reader.GetString(vrstaOrdinal),
-                                Opis = reader.IsDBNull(opisOrdinal) ? null : reader.GetString(opisOrdinal) // Opis might be null
+                                Opis = reader.IsDBNull(opisOrdinal) ? null : reader.GetString(opisOrdinal)
                             });
                         }
                     }
-             
                 }
             }
             return transakcijeList;
         }
+
         public async Task<Transakcije> GetByIdAsync(int id)
         {
             Transakcije transakcija = null;
@@ -78,40 +81,61 @@ namespace BankovniSustavApp.Repositories
                                 RacunID = reader.GetInt32(racunIdOrdinal),
                                 DatumVrijeme = reader.GetDateTime(datumVrijemeOrdinal),
                                 Iznos = reader.GetDecimal(iznosOrdinal),
-                                Vrsta = reader.IsDBNull(vrstaOrdinal) ? null : reader.GetString(vrstaOrdinal),
+                                Vrsta = reader.GetString(vrstaOrdinal),
                                 Opis = reader.IsDBNull(opisOrdinal) ? null : reader.GetString(opisOrdinal)
                             };
                         }
                     }
-                
                 }
             }
             return transakcija;
         }
-
 
         public async Task<bool> AddAsync(Transakcije transakcija)
         {
             using (var connection = _dbHelper.CreateConnection())
             {
                 var query = @"INSERT INTO transakcije (RacunID, DatumVrijeme, Iznos, Vrsta, Opis) 
-                          VALUES (@RacunID, @DatumVrijeme, @Iznos, @Vrsta, @Opis)";
+                      VALUES (@RacunID, @DatumVrijeme, @Iznos, @Vrsta, @Opis)";
+                var updateQuery = @"UPDATE racuni SET Stanje = Stanje + @Iznos WHERE RacunID = @RacunID";
+
                 using (var command = new MySqlCommand(query, connection))
+                using (var updateCommand = new MySqlCommand(updateQuery, connection))
                 {
-                    // Parameterization
                     command.Parameters.AddWithValue("@RacunID", transakcija.RacunID);
                     command.Parameters.AddWithValue("@DatumVrijeme", transakcija.DatumVrijeme);
                     command.Parameters.AddWithValue("@Iznos", transakcija.Iznos);
                     command.Parameters.AddWithValue("@Vrsta", transakcija.Vrsta);
                     command.Parameters.AddWithValue("@Opis", transakcija.Opis);
 
-                    await connection.OpenAsync();
-                    int result = await command.ExecuteNonQueryAsync();
+                    updateCommand.Parameters.AddWithValue("@RacunID", transakcija.RacunID);
+                    updateCommand.Parameters.AddWithValue("@Iznos", transakcija.Iznos);
 
-                    return result > 0;
+                    await connection.OpenAsync();
+                    using (var transaction = await connection.BeginTransactionAsync())
+                    {
+                        command.Transaction = transaction;
+                        updateCommand.Transaction = transaction;
+
+                        int result = await command.ExecuteNonQueryAsync();
+                        if (result > 0)
+                        {
+                            int updateResult = await updateCommand.ExecuteNonQueryAsync();
+                            if (updateResult > 0)
+                            {
+                                await transaction.CommitAsync();
+                                AddLog("Added transaction", "json");
+                                return true;
+                            }
+                        }
+                        await transaction.RollbackAsync();
+                    }
                 }
             }
+            return false;
         }
+
+
 
         public async Task<bool> UpdateAsync(Transakcije transakcija)
         {
@@ -136,7 +160,11 @@ namespace BankovniSustavApp.Repositories
 
                     await connection.OpenAsync();
                     int result = await command.ExecuteNonQueryAsync();
-          
+
+                    if (result > 0)
+                    {
+                        AddLog("Updated transaction", "xml");
+                    }
 
                     return result > 0;
                 }
@@ -155,11 +183,28 @@ namespace BankovniSustavApp.Repositories
 
                     await connection.OpenAsync();
                     int result = await command.ExecuteNonQueryAsync();
-       
+
+                    if (result > 0)
+                    {
+                        AddLog("Deleted transaction", "xml");
+                    }
 
                     return result > 0;
                 }
             }
+        }
+
+        private void AddLog(string action, string format)
+        {
+            var log = new Logovi
+            {
+                KorisnikID = SessionManager.CurrentKorisnikId,
+                UserEmail = SessionManager.CurrentUserEmail, // Assuming you store this in SessionManager
+                DatumVrijeme = DateTime.Now,
+                Opis = action,
+                Operation = action
+            };
+            _logoviDataAccess.AddLog(log, format);
         }
     }
 }

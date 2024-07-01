@@ -12,7 +12,9 @@ namespace BankovniSustavApp.Models
     {
         public int LogID { get; set; }
         public int? KorisnikID { get; set; } // Nullable for cases where there's no user linked
+        public string UserEmail { get; set; }
         public DateTime DatumVrijeme { get; set; }
         public string Opis { get; set; }
+        public string Operation { get; set; }
     }
 }

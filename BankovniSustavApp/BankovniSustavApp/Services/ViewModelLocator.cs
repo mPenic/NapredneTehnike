@@ -1,12 +1,7 @@
 ﻿using BankovniSustavApp.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace BankovniSustavApp.Services
+namespace BankovniSustavApp
 {
     public class ViewModelLocator
     {
@@ -14,6 +9,7 @@ namespace BankovniSustavApp.Services
         {
             // Initialize if needed
         }
+
         public DashboardViewModel DashboardViewModel => App.ServiceProvider.GetRequiredService<DashboardViewModel>();
     }
 }

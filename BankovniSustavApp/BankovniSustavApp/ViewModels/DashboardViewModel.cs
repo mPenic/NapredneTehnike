@@ -46,13 +46,17 @@ namespace BankovniSustavApp.ViewModels
         private int _searchId;
         private int _currentKorisnikId;
         private string _userEmail;
+        private string _userName;
         private Racuni _selectedAccount;
         private ObservableCollection<Racuni> _userAccounts;
         private readonly IUserAccountService _userAccountService;
+        private readonly IGenericRepository<Korisnik> _korisnikRepository;
         private readonly IGenericRepository<Transakcije> _transakcijeRepository;
         private readonly IAccountRepository<Racuni> _racuniRepository;
         private ObservableCollection<Transakcije> _transactions;
-
+        public ObservableCollection<string> TransactionTypes { get; } = new ObservableCollection<string> { "Deposit", "Withdrawal" };
+        private string _selectedTransactionType;
+        private decimal _amount;
 
         public ICommand SaveSettingsCommand { get; private set; }
         public ICommand LoadUserAccountsCommand { get; private set; }
@@ -63,13 +67,22 @@ namespace BankovniSustavApp.ViewModels
         public ICommand GenerateRtfReportCommand { get; private set; }
         public ICommand SignDataCommand { get; private set; }
         public ICommand VerifySignatureCommand { get; private set; }
+        public ICommand AddAccountCommand { get; private set; }
+        public ICommand CreateTransactionCommand { get; private set; }
+        public ICommand OpenTransactionFormCommand { get; private set; }
+        public ICommand SubmitTransactionCommand { get; private set; }
 
-        public DashboardViewModel(IGenericRepository<Transakcije> transakcijeRepository, IAccountRepository<Racuni> racuniRepository, IUserAccountService userAccountService)
+
+        public DashboardViewModel(
+            IGenericRepository<Transakcije> transakcijeRepository,
+            IAccountRepository<Racuni> racuniRepository,
+            IUserAccountService userAccountService,
+            IGenericRepository<Korisnik> korisnikRepository)
         {
-            _settingsManager = new SettingsManager("settings.ini");
             _transakcijeRepository = transakcijeRepository;
             _userAccountService = userAccountService;
             _racuniRepository = racuniRepository;
+            _korisnikRepository = korisnikRepository;
 
             SaveSettingsCommand = new RelayCommand(SaveSettings);
             GetAllTransactionsCommand = new RelayCommand(async () => await LoadTransactions());
@@ -79,50 +92,78 @@ namespace BankovniSustavApp.ViewModels
             GenerateRtfReportCommand = new RelayCommand(() => GenerateRtfReport());
             SignDataCommand = new RelayCommand(SignDataExecute);
             VerifySignatureCommand = new RelayCommand(VerifySignatureExecute);
+            AddAccountCommand = new RelayCommand(async () => await AddAccount());
+            SubmitTransactionCommand = new RelayCommand(async () => await SubmitTransaction());
 
+            InitializeUser().ConfigureAwait(false);
             LoadSettings();
             LoadTransactions().ConfigureAwait(false);
+        }
 
-            LoadUserAccountsCommand = new RelayCommand(async () => await LoadUserAccounts());
-        }
-        public ObservableCollection<Racuni> UserAccounts
+        private async Task InitializeUser()
         {
-            get => _userAccounts;
-            set => SetProperty(ref _userAccounts, value);
+            CurrentKorisnikId = SessionManager.CurrentKorisnikId;
+            _userEmail = SessionManager.CurrentUserEmail;
+
+            var korisnik = await _korisnikRepository.GetByIdAsync(CurrentKorisnikId);
+            if (korisnik != null)
+            {
+                UserName = korisnik.Ime;
+                WelcomeMessage = $"Welcome, {UserName}!";
+                await LoadUserAccounts();
+            }
         }
-        public async Task InitializeUserAccounts(string email)
-        {
-            _userEmail = email;
-            CurrentKorisnikId = await _userAccountService.GetKorisnikIdByEmailAsync(email);
-            await LoadUserAccounts();
-        }
+
         public async Task LoadUserAccounts()
         {
-            // This should be the list of accounts for the logged-in user
             var userAccounts = await _racuniRepository.GetByKorisnikIdAsync(CurrentKorisnikId);
             UserAccounts = new ObservableCollection<Racuni>(userAccounts);
 
-            // Automatically select the first account
             if (UserAccounts.Any())
             {
                 SelectedAccount = UserAccounts.First();
             }
         }
 
+        public ObservableCollection<Racuni> UserAccounts
+        {
+            get => _userAccounts;
+            set => SetProperty(ref _userAccounts, value);
+        }
+        public string UserName
+        {
+            get => _userName;
+            set => SetProperty(ref _userName, value);
+        }
         public int CurrentKorisnikId
         {
             get => _currentKorisnikId;
             set => SetProperty(ref _currentKorisnikId, value);
         }
+
         public Racuni SelectedAccount
         {
             get => _selectedAccount;
             set => SetProperty(ref _selectedAccount, value);
         }
+
+        /*Transactions*/
         public int DeleteTransactionId
         {
             get => _deleteTransactionId;
             set => SetProperty(ref _deleteTransactionId, value);
+        }
+
+        public string SelectedTransactionType
+        {
+            get => _selectedTransactionType;
+            set => SetProperty(ref _selectedTransactionType, value);
+        }
+
+        public decimal Amount
+        {
+            get => _amount;
+            set => SetProperty(ref _amount, value);
         }
 
         public int SearchId
@@ -130,7 +171,7 @@ namespace BankovniSustavApp.ViewModels
             get => _searchId;
             set => SetProperty(ref _searchId, value);
         }
-
+        /*Settings*/
         public string SelectedLanguage
         {
             get => _selectedLanguage;
@@ -155,16 +196,43 @@ namespace BankovniSustavApp.ViewModels
             "Croatian"
         };
 
+        public ObservableCollection<string> StorageMethods { get; } = new ObservableCollection<string>
+        {
+            "INI File",
+            "Windows Registry"
+        };
+
+        private string _selectedStorageMethod;
+        public string SelectedStorageMethod
+        {
+            get => _selectedStorageMethod;
+            set
+            {
+                if (SetProperty(ref _selectedStorageMethod, value))
+                {
+                    InitializeSettingsManager();
+                }
+            }
+        }
+
+        private void InitializeSettingsManager()
+        {
+            bool useRegistry = SelectedStorageMethod == "Windows Registry";
+            _settingsManager = new SettingsManager("settings.ini", useRegistry);
+        }
+
         public string WelcomeMessage
         {
             get => _welcomeMessage;
             set => SetProperty(ref _welcomeMessage, value);
         }
+
         public ObservableCollection<Transakcije> Transactions
         {
             get => _transactions;
             set => SetProperty(ref _transactions, value);
         }
+
         private async Task GetTransactionById()
         {
             var transaction = await _transakcijeRepository.GetByIdAsync(SearchId);
@@ -199,19 +267,19 @@ namespace BankovniSustavApp.ViewModels
                 MessageBox.Show("Failed to delete transaction.");
             }
         }
+
         private void GeneratePdfReport()
         {
             var reportService = new ReportGenerationService();
-            // Assuming filePath is determined via a SaveFileDialog or similar
             reportService.GeneratePdfReport(Transactions, "transactions_report.pdf");
         }
 
         private void GenerateRtfReport()
         {
             var reportService = new ReportGenerationService();
-            // Assuming filePath is determined via a SaveFileDialog or similar
             reportService.GenerateRtfReport(Transactions, "transactions_report.rtf");
         }
+
         private async Task LoadTransactions()
         {
             var transactionsList = await _transakcijeRepository.GetAllAsync();
@@ -220,11 +288,11 @@ namespace BankovniSustavApp.ViewModels
 
         private void LoadSettings()
         {
+            InitializeSettingsManager();
             SelectedLanguage = _settingsManager.ReadSetting("General", "Language");
             AutoRefreshInterval = int.TryParse(_settingsManager.ReadSetting("General", "AutoRefreshInterval"), out int interval) ? interval : 30;
             MaxDisplayItems = int.TryParse(_settingsManager.ReadSetting("General", "MaxDisplayItems"), out int items) ? items : 100;
-
-            WelcomeMessage = "Welcome, User!";
+            WelcomeMessage = $"Welcome, {UserName}!";
         }
 
         private void SaveSettings()
@@ -232,11 +300,71 @@ namespace BankovniSustavApp.ViewModels
             _settingsManager.WriteSetting("General", "Language", SelectedLanguage);
             _settingsManager.WriteSetting("General", "AutoRefreshInterval", AutoRefreshInterval.ToString());
             _settingsManager.WriteSetting("General", "MaxDisplayItems", MaxDisplayItems.ToString());
+
+            MessageBox.Show("Settings have been saved successfully.", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private async Task AddAccount()
+        {
+            var random = new Random();
+            var newAccount = new Racuni
+            {
+                KorisnikID = CurrentKorisnikId,
+                BrojRacuna = "HR" + random.Next(100000000, 999999999),
+                Stanje = 0,
+                DatumOtvaranja = DateTime.Now,
+                Vrsta = "Savings",
+                Valuta = "HRK"
+            };
+
+            bool success = await _racuniRepository.AddAsync(newAccount);
+
+            if (success)
+            {
+                await LoadUserAccounts();
+                MessageBox.Show("New account added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Failed to add new account.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task SubmitTransaction()
+        {
+            if (SelectedAccount == null)
+            {
+                MessageBox.Show("Please select an account.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var transactionType = SelectedTransactionType == "Deposit" ? "Credit" : "Debit";
+            var newTransaction = new Transakcije
+            {
+                RacunID = SelectedAccount.RacunID,
+                DatumVrijeme = DateTime.Now,
+                Iznos = transactionType == "Credit" ? Amount : -Amount,
+                Vrsta = transactionType,
+                Opis = "User transaction"
+            };
+
+            bool success = await _transakcijeRepository.AddAsync(newTransaction);
+
+            if (success)
+            {
+                await LoadTransactions();
+                MessageBox.Show("Transaction completed successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Failed to complete the transaction.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public string DataToSign { get; set; }
         public byte[] Signature { get; set; }
         public string DataToVerify { get; set; }
+
         public byte[] SignData(string dataToSign)
         {
             var keys = KeyManager.LoadKeys();
@@ -247,11 +375,12 @@ namespace BankovniSustavApp.ViewModels
                 return rsa.SignData(dataBytes, SHA256.Create());
             }
         }
+
         private void SignDataExecute()
         {
-            // Assumes DataToSign is a property bound to a text box in the UI
             Signature = SignData(DataToSign);
         }
+
         public bool VerifySignature(string originalData, byte[] signature)
         {
             var keys = KeyManager.LoadKeys();
@@ -265,7 +394,6 @@ namespace BankovniSustavApp.ViewModels
 
         private void VerifySignatureExecute()
         {
-            // Assumes DataToVerify is a property bound to a text box in the UI
             var isVerified = VerifySignature(DataToVerify, Signature);
             MessageBox.Show(isVerified ? "Signature verified." : "Verification failed.");
         }

@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:BankovniSustavApp"
              xmlns:services="clr-namespace:BankovniSustavApp.Services">
     <Application.Resources>
-        <services:ViewModelLocator x:Key="ViewModelLocator"/>
+        <local:ViewModelLocator x:Key="ViewModelLocator"/>
         <Style x:Key="PlaceholderTextBox" TargetType="TextBox">
             <Setter Property="Foreground" Value="Gray"/>
             <Style.Triggers>

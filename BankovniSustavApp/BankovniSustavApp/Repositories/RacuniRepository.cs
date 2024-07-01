@@ -2,18 +2,21 @@
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Data;
 using BankovniSustavApp.DataAccess;
+using BankovniSustavApp.Helpers;
+using System;
 
 namespace BankovniSustavApp.Repositories
 {
     public class RacuniRepository : IAccountRepository<Racuni>
     {
         private readonly DatabaseHelper _dbHelper;
+        private readonly LogoviDataAccess _logoviDataAccess;
 
-        public RacuniRepository(DatabaseHelper dbHelper)
+        public RacuniRepository(DatabaseHelper dbHelper, LogoviDataAccess logoviDataAccess)
         {
             _dbHelper = dbHelper;
+            _logoviDataAccess = logoviDataAccess;
         }
 
         public async Task<IEnumerable<Racuni>> GetByKorisnikIdAsync(int korisnikId)
@@ -53,6 +56,7 @@ namespace BankovniSustavApp.Repositories
             }
             return accountsList;
         }
+
         public async Task<IEnumerable<Racuni>> GetAllAsync()
         {
             var racuniList = new List<Racuni>();
@@ -85,7 +89,6 @@ namespace BankovniSustavApp.Repositories
                             });
                         }
                     }
-                  
                 }
             }
             return racuniList;
@@ -96,7 +99,8 @@ namespace BankovniSustavApp.Repositories
             Racuni racun = null;
             using (var connection = _dbHelper.CreateConnection())
             {
-                using (var command = new MySqlCommand("SELECT * FROM racuni WHERE RacunID = @id", connection))
+                var query = "SELECT * FROM racuni WHERE RacunID = @id";
+                using (var command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     await connection.OpenAsync();
@@ -124,7 +128,6 @@ namespace BankovniSustavApp.Repositories
                             };
                         }
                     }
-                
                 }
             }
             return racun;
@@ -146,13 +149,18 @@ namespace BankovniSustavApp.Repositories
                     command.Parameters.AddWithValue("@Valuta", racun.Valuta);
 
                     await connection.OpenAsync();
-                    var result = await command.ExecuteNonQueryAsync();
-               
+                    int result = await command.ExecuteNonQueryAsync();
+
+                    if (result > 0)
+                    {
+                        AddLog("Added account", "json");
+                    }
 
                     return result > 0;
                 }
             }
         }
+
         public async Task<bool> UpdateAsync(Racuni racun)
         {
             using (var connection = _dbHelper.CreateConnection())
@@ -170,12 +178,17 @@ namespace BankovniSustavApp.Repositories
 
                     await connection.OpenAsync();
                     int result = await command.ExecuteNonQueryAsync();
-                 
+
+                    if (result > 0)
+                    {
+                        AddLog("Updated account", "json");
+                    }
 
                     return result > 0;
                 }
             }
         }
+
         public async Task<bool> DeleteAsync(int id)
         {
             using (var connection = _dbHelper.CreateConnection())
@@ -187,11 +200,28 @@ namespace BankovniSustavApp.Repositories
 
                     await connection.OpenAsync();
                     int result = await command.ExecuteNonQueryAsync();
-               
+
+                    if (result > 0)
+                    {
+                        AddLog("Deleted account", "json");
+                    }
 
                     return result > 0;
                 }
             }
+        }
+
+        private void AddLog(string action, string format)
+        {
+            var log = new Logovi
+            {
+                KorisnikID = SessionManager.CurrentKorisnikId,
+                UserEmail = SessionManager.CurrentUserEmail, // Assuming you store this in SessionManager
+                DatumVrijeme = DateTime.Now,
+                Opis = action,
+                Operation = action
+            };
+            _logoviDataAccess.AddLog(log, format);
         }
     }
 }

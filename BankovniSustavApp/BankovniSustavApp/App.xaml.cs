@@ -26,6 +26,10 @@ namespace BankovniSustavApp
             ServiceCollection services = new ServiceCollection();
             ConfigureServices(services);
             ServiceProvider = services.BuildServiceProvider();
+
+            // Initialize SessionManager
+            var userAccountService = ServiceProvider.GetRequiredService<IUserAccountService>();
+            SessionManager.Initialize(userAccountService);
         }
 
         private void ConfigureServices(ServiceCollection services)
@@ -42,14 +46,28 @@ namespace BankovniSustavApp
             services.AddTransient<DashboardViewModel>();
             services.AddSingleton<MainWindow>();
             // Add other services and repositories as needed
+
+            var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var dataDirectory = Path.Combine(appDirectory, "Data");
+
+            // Ensure the Data directory exists
+            if (!Directory.Exists(dataDirectory))
+            {
+                Directory.CreateDirectory(dataDirectory);
+            }
+
+            var iniPath = Path.Combine(dataDirectory, "settings.ini");
+            bool useRegistry = false; // Set this based on your logic
+            services.AddSingleton(new SettingsManager(iniPath, useRegistry));
+
+            var xmlPath = Path.Combine(dataDirectory, "logs.xml");
+            var jsonPath = Path.Combine(dataDirectory, "logs.json");
+            services.AddSingleton(new LogoviDataAccess(xmlPath, jsonPath));
         }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var iniPath = Path.Combine(appDataPath, "BankovniSustavApp", "settings.ini");
-            var settingsManager = new SettingsManager(iniPath);
 
             try
             {
@@ -61,7 +79,7 @@ namespace BankovniSustavApp
                 }
                 else
                 {
-                    // Handle the error appropriately
+                    Log("Main window is null.");
                 }
 
                 this.ShutdownMode = ShutdownMode.OnLastWindowClose;

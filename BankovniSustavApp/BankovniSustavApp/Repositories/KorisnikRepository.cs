@@ -121,7 +121,7 @@ namespace BankovniSustavApp.Repositories
                         var result = await command.ExecuteNonQueryAsync();
                         return result == 1;
                     }
-                    catch (MySqlException ex) when (ex.Number == 1062) // MySQL error code for duplicate entry
+                    catch (MySqlException ex) when (ex.Number == 1062)
                     {
                         // Handle the duplicate entry case
                         MessageBox.Show("User already exists", "Alert", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -176,5 +176,20 @@ namespace BankovniSustavApp.Repositories
                 }
             }
         }
+
+        public async Task<string> GetUserNameByIdAsync(int id)
+        {
+            using (var connection = _dbHelper.CreateConnection())
+            {
+                var query = "SELECT Ime FROM korisnici WHERE KorisnikID = @id";
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    await connection.OpenAsync();
+                    return (string)await command.ExecuteScalarAsync();
+                }
+            }
+        }
+
     }
 }
