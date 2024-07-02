@@ -1,8 +1,7 @@
-﻿// Helpers/KeyManager.cs
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
-using System.Xml;
 using Newtonsoft.Json;
 
 namespace BankovniSustavApp.Helpers
@@ -15,24 +14,68 @@ namespace BankovniSustavApp.Helpers
 
     public static class KeyManager
     {
-        private static string _keysFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "SignatureKeys.json");
+        private static string _publicKeyFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "PublicKey.json");
+        private static string _privateKeysFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "PrivateKeys.json");
+        private static Dictionary<int, string> _privateKeysDictionary = new Dictionary<int, string>();
 
-        public static void SaveKeys(KeyPair keys)
+        static KeyManager()
         {
-            var json = JsonConvert.SerializeObject(keys, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText(_keysFilePath, json);
+            LoadPublicKey();
+            LoadAllPrivateKeys();
         }
 
-        public static KeyPair LoadKeys()
+        private static void LoadPublicKey()
         {
-            if (!File.Exists(_keysFilePath))
+            if (File.Exists(_publicKeyFilePath))
             {
-                return null;
+                var json = File.ReadAllText(_publicKeyFilePath);
+                PublicKey = JsonConvert.DeserializeObject<string>(json);
             }
-
-            var json = File.ReadAllText(_keysFilePath);
-            return JsonConvert.DeserializeObject<KeyPair>(json);
         }
+
+        private static void SavePublicKey(string publicKey)
+        {
+            var json = JsonConvert.SerializeObject(publicKey, Formatting.Indented);
+            File.WriteAllText(_publicKeyFilePath, json);
+        }
+
+        private static void LoadAllPrivateKeys()
+        {
+            if (File.Exists(_privateKeysFilePath))
+            {
+                var json = File.ReadAllText(_privateKeysFilePath);
+                _privateKeysDictionary = JsonConvert.DeserializeObject<Dictionary<int, string>>(json) ?? new Dictionary<int, string>();
+            }
+        }
+
+        private static void SaveAllPrivateKeys()
+        {
+            var json = JsonConvert.SerializeObject(_privateKeysDictionary, Formatting.Indented);
+            File.WriteAllText(_privateKeysFilePath, json);
+        }
+
+        public static void SaveKeysForUser(int userId, KeyPair keys)
+        {
+            if (string.IsNullOrEmpty(PublicKey))
+            {
+                SavePublicKey(keys.PublicKey);
+            }
+            _privateKeysDictionary[userId] = keys.PrivateKey;
+            SaveAllPrivateKeys();
+        }
+
+        public static string LoadPrivateKeyForUser(int userId)
+        {
+            _privateKeysDictionary.TryGetValue(userId, out var privateKey);
+            return privateKey;
+        }
+
+        public static bool KeysExistForUser(int userId)
+        {
+            return _privateKeysDictionary.ContainsKey(userId);
+        }
+        
+        public static string PublicKey { get; private set; }
 
         public static KeyPair GenerateRsaKeys()
         {
@@ -47,4 +90,3 @@ namespace BankovniSustavApp.Helpers
         }
     }
 }
-

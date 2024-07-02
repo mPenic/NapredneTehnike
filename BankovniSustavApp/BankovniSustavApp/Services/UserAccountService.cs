@@ -31,25 +31,21 @@ namespace BankovniSustavApp.Services
         public async Task<bool> RegisterUserAsync(Korisnik newUser)
         {
             string plainText = newUser.Lozinka;
-            // Generate the hash (includes the salt)
             string hashedPassword = BCrypt.Net.BCrypt.HashPassword(newUser.Lozinka);
-
-            // Store the full hash in the user record
             newUser.Lozinka = hashedPassword;
 
-            // Save the user to the database
             var result = await _userRepository.AddAsync(newUser);
             if (result)
             {
                 Console.WriteLine($"Stored Hash for {newUser.Email}: {hashedPassword}");
 
-                // Immediate verification using the original plain text password
                 bool verificationResult = BCrypt.Net.BCrypt.Verify(plainText, hashedPassword);
                 Console.WriteLine($"Immediate verification result: {verificationResult}");
                 if (!verificationResult)
                 {
                     Console.WriteLine("Immediate verification during registration failed.");
                 }
+
                 return verificationResult;
             }
             return false;

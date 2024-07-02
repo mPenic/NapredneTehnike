@@ -60,6 +60,13 @@ namespace BankovniSustavApp.ViewModels
             {
                 Console.WriteLine("Login successful.");
                 await SessionManager.SetCurrentKorisnikIdByEmailAsync(Email);
+
+                if (!KeyManager.KeysExistForUser(SessionManager.CurrentKorisnikId))
+                {
+                    var keys = KeyManager.GenerateRsaKeys();
+                    KeyManager.SaveKeysForUser(SessionManager.CurrentKorisnikId, keys);
+                }
+
                 _navigationService.NavigateToDashboard();
             }
             else

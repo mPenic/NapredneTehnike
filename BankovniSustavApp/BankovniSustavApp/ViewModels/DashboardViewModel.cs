@@ -367,10 +367,16 @@ namespace BankovniSustavApp.ViewModels
 
         public byte[] SignData(string dataToSign)
         {
-            var keys = KeyManager.LoadKeys();
+            var privateKey = KeyManager.LoadPrivateKeyForUser(CurrentKorisnikId);
+            if (string.IsNullOrEmpty(privateKey))
+            {
+                MessageBox.Show("Private key not found for the user.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new ArgumentNullException(nameof(privateKey), "Private key not found for the user.");
+            }
+
             using (var rsa = new RSACryptoServiceProvider())
             {
-                rsa.FromXmlString(keys.PrivateKey);
+                rsa.FromXmlString(privateKey);
                 var dataBytes = Encoding.UTF8.GetBytes(dataToSign);
                 return rsa.SignData(dataBytes, SHA256.Create());
             }
@@ -378,15 +384,29 @@ namespace BankovniSustavApp.ViewModels
 
         private void SignDataExecute()
         {
-            Signature = SignData(DataToSign);
+            try
+            {
+                Signature = SignData(DataToSign);
+                MessageBox.Show("Data signed successfully.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error signing data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public bool VerifySignature(string originalData, byte[] signature)
         {
-            var keys = KeyManager.LoadKeys();
+            var publicKey = KeyManager.PublicKey;
+            if (string.IsNullOrEmpty(publicKey))
+            {
+                MessageBox.Show("Public key not found.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw new ArgumentNullException(nameof(publicKey), "Public key not found.");
+            }
+
             using (var rsa = new RSACryptoServiceProvider())
             {
-                rsa.FromXmlString(keys.PublicKey);
+                rsa.FromXmlString(publicKey);
                 var dataBytes = Encoding.UTF8.GetBytes(originalData);
                 return rsa.VerifyData(dataBytes, SHA256.Create(), signature);
             }
@@ -394,8 +414,15 @@ namespace BankovniSustavApp.ViewModels
 
         private void VerifySignatureExecute()
         {
-            var isVerified = VerifySignature(DataToVerify, Signature);
-            MessageBox.Show(isVerified ? "Signature verified." : "Verification failed.");
+            try
+            {
+                var isVerified = VerifySignature(DataToVerify, Signature);
+                MessageBox.Show(isVerified ? "Signature verified." : "Verification failed.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error verifying signature: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
