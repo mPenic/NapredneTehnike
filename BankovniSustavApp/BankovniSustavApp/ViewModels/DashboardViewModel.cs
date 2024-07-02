@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using BankovniSustavApp.Services;
 using System.Security.Cryptography;
+using BankovniSustavApp.Views;
 
 namespace BankovniSustavApp.ViewModels
 {
@@ -54,6 +55,7 @@ namespace BankovniSustavApp.ViewModels
         private readonly IGenericRepository<Transakcije> _transakcijeRepository;
         private readonly IAccountRepository<Racuni> _racuniRepository;
         private ObservableCollection<Transakcije> _transactions;
+        private readonly FinnhubViewModel _finnhubViewModel;
         public ObservableCollection<string> TransactionTypes { get; } = new ObservableCollection<string> { "Deposit", "Withdrawal" };
         private string _selectedTransactionType;
         private decimal _amount;
@@ -71,13 +73,15 @@ namespace BankovniSustavApp.ViewModels
         public ICommand CreateTransactionCommand { get; private set; }
         public ICommand OpenTransactionFormCommand { get; private set; }
         public ICommand SubmitTransactionCommand { get; private set; }
+        public ICommand OpenFinnhubViewCommand { get; }
 
 
         public DashboardViewModel(
             IGenericRepository<Transakcije> transakcijeRepository,
             IAccountRepository<Racuni> racuniRepository,
             IUserAccountService userAccountService,
-            IGenericRepository<Korisnik> korisnikRepository)
+            IGenericRepository<Korisnik> korisnikRepository,
+            FinnhubViewModel finnhubViewModel)
         {
             _transakcijeRepository = transakcijeRepository;
             _userAccountService = userAccountService;
@@ -98,6 +102,9 @@ namespace BankovniSustavApp.ViewModels
             InitializeUser().ConfigureAwait(false);
             LoadSettings();
             LoadTransactions().ConfigureAwait(false);
+
+            _finnhubViewModel = finnhubViewModel;
+            OpenFinnhubViewCommand = new RelayCommand(OpenFinnhubView);
         }
 
         private async Task InitializeUser()
@@ -423,6 +430,12 @@ namespace BankovniSustavApp.ViewModels
             {
                 MessageBox.Show($"Error verifying signature: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void OpenFinnhubView()
+        {
+            var finnhubView = new FinnhubWindow(_finnhubViewModel);
+            finnhubView.Show();
         }
     }
 }

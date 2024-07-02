@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "NSZ4GlmJ12r1KAOj94z37M665s724DwANtoDdj/chLw=",
+  "Source": "BankovniRestApi",
+  "BasePath": "_content/BankovniRestApi",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

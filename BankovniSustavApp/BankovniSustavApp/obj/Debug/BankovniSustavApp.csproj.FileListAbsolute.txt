@@ -65,6 +65,16 @@ C:\Faks\4.sem\Napredne tehnike\.net\BankovniSustavApp\BankovniSustavApp\obj\Debu
 C:\Faks\4.sem\Napredne tehnike\.net\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.CopyComplete
 C:\Faks\4.sem\Napredne tehnike\.net\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.exe
 C:\Faks\4.sem\Napredne tehnike\.net\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.pdb
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.AssemblyReference.cache
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.SuggestedBindingRedirects.cache
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.baml
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\App.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp_MarkupCompile.cache
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp_MarkupCompile.lref
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\Data\SignatureKeys.json
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankovniSustavApp.exe.config
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankovniSustavApp.exe
@@ -114,16 +124,8 @@ C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Memo
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Numerics.Vectors.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Threading.Tasks.Extensions.xml
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.AssemblyReference.cache
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.SuggestedBindingRedirects.cache
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.baml
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.g.cs
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.g.cs
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.g.cs
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\App.g.cs
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\GeneratedInternalTypeHelper.g.cs
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp_MarkupCompile.cache
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp_MarkupCompile.lref
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\FinhubWindow.baml
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\FinhubWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\App.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.baml

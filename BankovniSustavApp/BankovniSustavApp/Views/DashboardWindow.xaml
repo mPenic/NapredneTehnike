@@ -12,7 +12,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding WelcomeMessage}" FontSize="24" Grid.Row="0" Margin="10" HorizontalAlignment="Center"/>
-
+        <Button Command="{Binding OpenFinnhubViewCommand}" Content="Open Finnhub Data" Grid.Row="0" Margin="10" HorizontalAlignment="Left" />
         <TabControl Grid.Row="1" Margin="10">
             <TabItem Header="Account Overview">
                 <Grid>

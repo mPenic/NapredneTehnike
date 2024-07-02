@@ -41,6 +41,8 @@ namespace BankovniSustavApp
             services.AddSingleton<IGenericRepository<Transakcije>, TransakcijeRepository>();
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddSingleton<INavigationService>(provider => new NavigationService(provider));
+            services.AddSingleton<FinnhubService>();
+            services.AddTransient<FinnhubViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<DashboardViewModel>();

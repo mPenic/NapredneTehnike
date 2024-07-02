@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using BankovniSustavApp;
 using BankovniSustavApp.ViewModels;
+using BankovniSustavApp.Views;
 using Microsoft.Extensions.DependencyInjection;
 // Ensure you have the Views namespace with all the windows
 
@@ -14,6 +15,7 @@ namespace BankovniSustavApp.Services
         void NavigateToLogin();
         void NavigateToRegister();
         void NavigateToDashboard();
+        void NavigateToFinnhub();
         // Add other navigation methods as needed
     }
 
@@ -91,6 +93,16 @@ namespace BankovniSustavApp.Services
             });
         }
 
+        public void NavigateToFinnhub()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var finnhubViewModel = _serviceProvider.GetService<FinnhubViewModel>();
+                var finnhubWindow = new FinnhubWindow(finnhubViewModel);
+                finnhubWindow.Show();
+                CloseAllWindowsExcept(finnhubWindow);
+            });
+        }
         // Add other navigation methods as needed
 
         private void CloseAllWindowsExcept(Window windowToKeep)
