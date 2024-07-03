@@ -41,7 +41,6 @@ namespace BankovniSustavApp.ViewModels
         {
             try
             {
-                // Convert SecureString to string for Lozinka
                 var lozinka = ConvertSecureStringToString(Lozinka);
                 Console.WriteLine($"Converted Lozinka: {lozinka}");
 
@@ -56,9 +55,9 @@ namespace BankovniSustavApp.ViewModels
                     Ime = this.Ime,
                     Prezime = this.Prezime,
                     Email = this.Email,
-                    Lozinka = lozinka, // This should be hashed inside the service
-                    DatumRegistracije = DateTime.Now, // Assuming registration date is now
-                    Status = "Active" // Assuming default status is "Active"
+                    Lozinka = lozinka, 
+                    DatumRegistracije = DateTime.Now, 
+                    Status = "Active" 
                 };
 
                 Console.WriteLine($"New User: {newUser.Ime}, {newUser.Prezime}, {newUser.Email}, {newUser.Lozinka}");
@@ -73,7 +72,7 @@ namespace BankovniSustavApp.ViewModels
                 if (result)
                 {
                     MessageBox.Show("Registration successful", "Success");
-                    _navigationService.NavigateToDashboard();  // Close the window after successful registration
+                    _navigationService.NavigateToDashboard(); 
                 }
                 else
                 {

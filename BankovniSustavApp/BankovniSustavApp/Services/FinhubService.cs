@@ -22,6 +22,5 @@ namespace BankovniSustavApp.Services
             return await response.Content.ReadAsStringAsync();
         }
 
-        // Add other methods to interact with different endpoints as needed
     }
 }

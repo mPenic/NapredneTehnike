@@ -1,12 +1,11 @@
-﻿// Services/NavigationService.cs
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using BankovniSustavApp;
 using BankovniSustavApp.ViewModels;
 using BankovniSustavApp.Views;
 using Microsoft.Extensions.DependencyInjection;
-// Ensure you have the Views namespace with all the windows
+
 
 namespace BankovniSustavApp.Services
 {
@@ -17,7 +16,7 @@ namespace BankovniSustavApp.Services
         void NavigateToDashboard();
         void NavigateToFinnhub();
         void NavigateToBanking();
-        // Add other navigation methods as needed
+       
     }
 
     public class NavigationService : INavigationService
@@ -32,16 +31,12 @@ namespace BankovniSustavApp.Services
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // Try to get an existing instance of the main window.
                 var loginWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
 
-                // If there's no existing main window, or it's not loaded (which means it's closed), create a new instance.
                 if (loginWindow == null || !loginWindow.IsLoaded)
                 {
-                    // Resolve LoginViewModel using the service provider.
                     var loginViewModel = _serviceProvider.GetService<LoginViewModel>();
 
-                    // If the LoginViewModel is not null, create and show the main window.
                     if (loginViewModel != null)
                     {
                         loginWindow = new MainWindow
@@ -54,11 +49,9 @@ namespace BankovniSustavApp.Services
                 }
                 else
                 {
-                    // If the main window exists and is loaded, just activate it.
                     loginWindow.Activate();
                 }
 
-                // Hide any open RegisterWindow instances instead of closing them.
                 var registerWindow = Application.Current.Windows.OfType<RegisterWindow>().FirstOrDefault();
                 if (registerWindow != null && registerWindow.IsLoaded)
                 {
@@ -73,7 +66,6 @@ namespace BankovniSustavApp.Services
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                // Resolve RegisterViewModel using the public ServiceProvider property
                 var registerViewModel = (RegisterViewModel)App.ServiceProvider.GetService(typeof(RegisterViewModel));
                 var registerWindow = new RegisterWindow(registerViewModel);
                 registerWindow.Show();
@@ -82,11 +74,9 @@ namespace BankovniSustavApp.Services
         }
         public void NavigateToDashboard()
         {
-            // Implement logic to navigate to the Dashboard view
             Application.Current.Dispatcher.Invoke(() =>
             {
                 Console.WriteLine("Navigating to dashboard.");
-                // Resolve DashboardViewModel using the public ServiceProvider property
                 var dashboardViewModel = (DashboardViewModel)App.ServiceProvider.GetService(typeof(DashboardViewModel));
                 var dashboardWindow = new DashboardWindow(dashboardViewModel);
                 dashboardWindow.Show();
@@ -114,8 +104,6 @@ namespace BankovniSustavApp.Services
                 bankingWindow.Show();
             });
         }
-
-        // Add other navigation methods as needed
 
         private void CloseAllWindowsExcept(Window windowToKeep)
         {

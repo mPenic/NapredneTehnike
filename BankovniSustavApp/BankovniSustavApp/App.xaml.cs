@@ -27,7 +27,6 @@ namespace BankovniSustavApp
             ConfigureServices(services);
             ServiceProvider = services.BuildServiceProvider();
 
-            // Initialize SessionManager
             var userAccountService = ServiceProvider.GetRequiredService<IUserAccountService>();
             SessionManager.Initialize(userAccountService);
         }
@@ -49,19 +48,17 @@ namespace BankovniSustavApp
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<DashboardViewModel>();
             services.AddSingleton<MainWindow>();
-            // Add other services and repositories as needed
 
             var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var dataDirectory = Path.Combine(appDirectory, "Data");
 
-            // Ensure the Data directory exists
             if (!Directory.Exists(dataDirectory))
             {
                 Directory.CreateDirectory(dataDirectory);
             }
 
             var iniPath = Path.Combine(dataDirectory, "settings.ini");
-            bool useRegistry = false; // Set this based on your logic
+            bool useRegistry = false;
             services.AddSingleton(new SettingsManager(iniPath, useRegistry));
 
             var xmlPath = Path.Combine(dataDirectory, "logs.xml");
@@ -90,14 +87,11 @@ namespace BankovniSustavApp
             }
             catch (Exception ex)
             {
-                // Log the details of the exception.
                 Log($"An exception occurred during application startup: {ex.Message}");
                 Log(ex.StackTrace);
 
-                // Optionally, display an error message to the user.
                 MessageBox.Show("An error occurred while starting the application. Please see the log file for details.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                // Terminate the application if it cannot start correctly.
                 Application.Current.Shutdown();
             }
             void Log(string message)

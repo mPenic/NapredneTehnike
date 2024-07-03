@@ -13,15 +13,12 @@ namespace BankovniSustavApp.Services
     {
         public void GeneratePdfReport(ObservableCollection<Transakcije> transactions, string filePath)
         {
-            // Use iTextSharp or other library to generate PDF
             Document document = new Document();
             PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
             document.Open();
-            // Add content to document
             foreach (var transaction in transactions)
             {
                 document.Add(new iTextSharp.text.Paragraph($"Transaction ID: {transaction.TransakcijaID}, Amount: {transaction.Iznos}"));
-                // Add more transaction details as needed
             }
             document.Close();
 

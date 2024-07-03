@@ -33,18 +33,14 @@ namespace BankovniSustavApp.DataAccess
                 using (var connection = CreateConnection())
                 {
                     await connection.OpenAsync();
-                    // Optionally perform a simple retrieval to ensure connection is valid
                     return true;
                 }
             }
             catch (MySqlException ex)
             {
-                // Handle exception
-                // Logging the exception might be useful.
                 Console.WriteLine(ex.Message);
                 return false;
             }
-            // No need for finally to close the connection, as 'using' statement handles it
         }
     }
 }

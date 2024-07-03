@@ -216,7 +216,7 @@ namespace BankovniSustavApp.Repositories
             var log = new Logovi
             {
                 KorisnikID = SessionManager.CurrentKorisnikId,
-                UserEmail = SessionManager.CurrentUserEmail, // Assuming you store this in SessionManager
+                UserEmail = SessionManager.CurrentUserEmail,
                 DatumVrijeme = DateTime.Now,
                 Opis = action,
                 Operation = action
