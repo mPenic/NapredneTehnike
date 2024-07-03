@@ -68,9 +68,13 @@ C:\Faks\4.sem\Napredne tehnike\.net\BankovniSustavApp\BankovniSustavApp\obj\Debu
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.AssemblyReference.cache
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp.csproj.SuggestedBindingRedirects.cache
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.baml
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\FinhubWindow.baml
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\BankingWindow.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\RegisterWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\FinhubWindow.g.cs
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\BankingWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\App.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\GeneratedInternalTypeHelper.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\BankovniSustavApp_MarkupCompile.cache
@@ -79,6 +83,7 @@ C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\Data\Signat
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankovniSustavApp.exe.config
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankovniSustavApp.exe
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankovniSustavApp.pdb
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankingLibrary.dll
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BCrypt.Net-Next.dll
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BouncyCastle.Crypto.dll
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BouncyCastle.Cryptography.dll
@@ -102,6 +107,7 @@ C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Nume
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Threading.Tasks.Extensions.dll
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\ZstdSharp.dll
+C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BankingLibrary.pdb
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BCrypt.Net-Next.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\BouncyCastle.Cryptography.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\Google.Protobuf.pdb
@@ -124,8 +130,6 @@ C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Memo
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Numerics.Vectors.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\bin\Debug\System.Threading.Tasks.Extensions.xml
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\FinhubWindow.baml
-C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\FinhubWindow.g.cs
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\App.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\MainWindow.baml
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\obj\Debug\Views\DashboardWindow.baml

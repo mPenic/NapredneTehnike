@@ -24,7 +24,7 @@ namespace BankovniSustavApp.Repositories
             var transakcijeList = new List<Transakcije>();
             using (var connection = _dbHelper.CreateConnection())
             {
-                using (var command = new MySqlCommand("SELECT * FROM transakcije", connection))
+                using (var command = new MySqlCommand("SELECT t.*, r.BrojRacuna FROM transakcije t JOIN racuni r ON t.RacunID = r.RacunID", connection))
                 {
                     await connection.OpenAsync();
                     using (var reader = await command.ExecuteReaderAsync())
@@ -35,6 +35,7 @@ namespace BankovniSustavApp.Repositories
                         int iznosOrdinal = reader.GetOrdinal("Iznos");
                         int vrstaOrdinal = reader.GetOrdinal("Vrsta");
                         int opisOrdinal = reader.GetOrdinal("Opis");
+                        int brojRacunaOrdinal = reader.GetOrdinal("BrojRacuna");
 
                         while (await reader.ReadAsync())
                         {
@@ -45,7 +46,8 @@ namespace BankovniSustavApp.Repositories
                                 DatumVrijeme = reader.GetDateTime(datumVrijemeOrdinal),
                                 Iznos = reader.GetDecimal(iznosOrdinal),
                                 Vrsta = reader.GetString(vrstaOrdinal),
-                                Opis = reader.IsDBNull(opisOrdinal) ? null : reader.GetString(opisOrdinal)
+                                Opis = reader.IsDBNull(opisOrdinal) ? null : reader.GetString(opisOrdinal),
+                                BrojRacuna = reader.GetString(brojRacunaOrdinal)
                             });
                         }
                     }

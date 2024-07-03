@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Git\NapredneTehnike\BankovniSustavApp\BankovniSustavApp\App.xaml
-4696120454
+51593447260
 
-341850800566
+371927360138
 147528375147
-MainWindow.xaml;Views\RegisterWindow.xaml;Views\DashboardWindow.xaml;Views\FinhubWindow.xaml;
+MainWindow.xaml;Views\RegisterWindow.xaml;Views\DashboardWindow.xaml;Views\FinhubWindow.xaml;Views\BankingWindow.xaml;
 
 False
 

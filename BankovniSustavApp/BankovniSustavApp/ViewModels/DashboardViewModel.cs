@@ -15,6 +15,9 @@ using System.Linq;
 using BankovniSustavApp.Services;
 using System.Security.Cryptography;
 using BankovniSustavApp.Views;
+using System.Windows.Navigation;
+using System.Windows.Data;
+using BankingLibrary;
 
 namespace BankovniSustavApp.ViewModels
 {
@@ -39,6 +42,7 @@ namespace BankovniSustavApp.ViewModels
     public class DashboardViewModel : ObservableObject
     {
         private SettingsManager _settingsManager;
+        private readonly Utility _utility;
         private string _selectedLanguage;
         private string _welcomeMessage;
         private int _autoRefreshInterval;
@@ -56,37 +60,74 @@ namespace BankovniSustavApp.ViewModels
         private readonly IAccountRepository<Racuni> _racuniRepository;
         private ObservableCollection<Transakcije> _transactions;
         private readonly FinnhubViewModel _finnhubViewModel;
-        public ObservableCollection<string> TransactionTypes { get; } = new ObservableCollection<string> { "Deposit", "Withdrawal" };
+        private readonly BankingViewModel _bankingViewModel;
         private string _selectedTransactionType;
         private decimal _amount;
+        public ObservableCollection<string> TransactionTypes { get; } = new ObservableCollection<string> { "Deposit", "Withdrawal" };
 
         public ICommand SaveSettingsCommand { get; private set; }
         public ICommand LoadUserAccountsCommand { get; private set; }
+
         public ICommand GetAllTransactionsCommand { get; private set; }
         public ICommand GetTransactionByIdCommand { get; private set; }
         public ICommand DeleteTransactionCommand { get; private set; }
+
         public ICommand GeneratePdfReportCommand { get; private set; }
         public ICommand GenerateRtfReportCommand { get; private set; }
+
         public ICommand SignDataCommand { get; private set; }
         public ICommand VerifySignatureCommand { get; private set; }
+
         public ICommand AddAccountCommand { get; private set; }
         public ICommand CreateTransactionCommand { get; private set; }
         public ICommand OpenTransactionFormCommand { get; private set; }
         public ICommand SubmitTransactionCommand { get; private set; }
-        public ICommand OpenFinnhubViewCommand { get; }
 
+        public ICommand OpenFinnhubViewCommand { get; }
+        public ICommand OpenBankingViewCommand { get; }
+
+        public ICommand LoadTransactionsCommand { get; }
+        public ICommand SortTransactionsCommand { get; }
+
+        public ICommand ShowDialogOneCommand { get; }
+        public ICommand ShowDialogTwoCommand { get; }
+
+        public ICollectionView TransactionsView { get; set; }
+        private string _filterText;
+        public string FilterText
+        {
+            get => _filterText;
+            set
+            {
+                SetProperty(ref _filterText, value);
+                TransactionsView?.Refresh();
+            }
+        }
+
+        public ObservableCollection<Transakcije> Transactions
+        {
+            get => _transactions;
+            set
+            {
+                SetProperty(ref _transactions, value);
+                OnPropertyChanged();
+            }
+        }
 
         public DashboardViewModel(
             IGenericRepository<Transakcije> transakcijeRepository,
             IAccountRepository<Racuni> racuniRepository,
             IUserAccountService userAccountService,
             IGenericRepository<Korisnik> korisnikRepository,
-            FinnhubViewModel finnhubViewModel)
+            FinnhubViewModel finnhubViewModel,
+            BankingViewModel bankingViewModel)
         {
             _transakcijeRepository = transakcijeRepository;
             _userAccountService = userAccountService;
             _racuniRepository = racuniRepository;
             _korisnikRepository = korisnikRepository;
+
+            _utility = new Utility();
 
             SaveSettingsCommand = new RelayCommand(SaveSettings);
             GetAllTransactionsCommand = new RelayCommand(async () => await LoadTransactions());
@@ -105,6 +146,52 @@ namespace BankovniSustavApp.ViewModels
 
             _finnhubViewModel = finnhubViewModel;
             OpenFinnhubViewCommand = new RelayCommand(OpenFinnhubView);
+
+            _bankingViewModel = bankingViewModel;
+            OpenBankingViewCommand = new RelayCommand(OpenBankingView);
+
+            LoadTransactionsCommand = new RelayCommand(async () => await LoadTransactions());
+            SortTransactionsCommand = new RelayCommand(param => SortTransactions(param as string));
+
+            Transactions = new ObservableCollection<Transakcije>();
+            TransactionsView = CollectionViewSource.GetDefaultView(Transactions);
+            TransactionsView.Filter = FilterTransactions;
+            TransactionsView.SortDescriptions.Add(new SortDescription("TransakcijaID", ListSortDirection.Ascending));
+
+            ShowDialogOneCommand = new RelayCommand(ShowDialogOne);
+            ShowDialogTwoCommand = new RelayCommand(ShowDialogTwo);
+        }
+
+        // Account Management
+
+        public int CurrentKorisnikId
+        {
+            get => _currentKorisnikId;
+            set => SetProperty(ref _currentKorisnikId, value);
+        }
+
+        public string UserName
+        {
+            get => _userName;
+            set => SetProperty(ref _userName, value);
+        }
+
+        public string UserEmail
+        {
+            get => _userEmail;
+            set => SetProperty(ref _userEmail, value);
+        }
+
+        public ObservableCollection<Racuni> UserAccounts
+        {
+            get => _userAccounts;
+            set => SetProperty(ref _userAccounts, value);
+        }
+
+        public Racuni SelectedAccount
+        {
+            get => _selectedAccount;
+            set => SetProperty(ref _selectedAccount, value);
         }
 
         private async Task InitializeUser()
@@ -132,29 +219,34 @@ namespace BankovniSustavApp.ViewModels
             }
         }
 
-        public ObservableCollection<Racuni> UserAccounts
+        private async Task AddAccount()
         {
-            get => _userAccounts;
-            set => SetProperty(ref _userAccounts, value);
-        }
-        public string UserName
-        {
-            get => _userName;
-            set => SetProperty(ref _userName, value);
-        }
-        public int CurrentKorisnikId
-        {
-            get => _currentKorisnikId;
-            set => SetProperty(ref _currentKorisnikId, value);
+            var random = new Random();
+            var newAccount = new Racuni
+            {
+                KorisnikID = CurrentKorisnikId,
+                BrojRacuna = "HR" + random.Next(100000000, 999999999),
+                Stanje = 0,
+                DatumOtvaranja = DateTime.Now,
+                Vrsta = "Savings",
+                Valuta = "EUR"
+            };
+
+            bool success = await _racuniRepository.AddAsync(newAccount);
+
+            if (success)
+            {
+                await LoadUserAccounts();
+                MessageBox.Show("New account added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Failed to add new account.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        public Racuni SelectedAccount
-        {
-            get => _selectedAccount;
-            set => SetProperty(ref _selectedAccount, value);
-        }
+        //Transactions
 
-        /*Transactions*/
         public int DeleteTransactionId
         {
             get => _deleteTransactionId;
@@ -178,7 +270,113 @@ namespace BankovniSustavApp.ViewModels
             get => _searchId;
             set => SetProperty(ref _searchId, value);
         }
-        /*Settings*/
+
+        private async Task LoadTransactions()
+        {
+            var transactionsList = await _transakcijeRepository.GetAllAsync();
+
+            foreach (var transaction in transactionsList)
+            {
+                transaction.IznosFormatted = _utility.FormatCurrency(transaction.Iznos);
+            }
+
+            Transactions = new ObservableCollection<Transakcije>(transactionsList);
+            TransactionsView = CollectionViewSource.GetDefaultView(Transactions);
+            TransactionsView.Filter = FilterTransactions;
+        }
+
+        private async Task GetTransactionById()
+        {
+            var transaction = await _transakcijeRepository.GetByIdAsync(SearchId);
+            Transactions.Clear();
+            if (transaction != null)
+            {
+                Transactions.Add(transaction);
+            }
+            else
+            {
+                MessageBox.Show("Transaction not found.");
+            }
+        }
+
+        private async Task DeleteTransaction()
+        {
+            var transactionToDelete = Transactions.FirstOrDefault(t => t.TransakcijaID == DeleteTransactionId);
+            if (transactionToDelete == null)
+            {
+                MessageBox.Show("Please enter a valid transaction ID to delete.");
+                return;
+            }
+
+            bool result = await _transakcijeRepository.DeleteAsync(transactionToDelete.TransakcijaID);
+            if (result)
+            {
+                Transactions.Remove(transactionToDelete);
+                MessageBox.Show("Transaction deleted successfully.");
+            }
+            else
+            {
+                MessageBox.Show("Failed to delete transaction.");
+            }
+        }
+
+        private async Task SubmitTransaction()
+        {
+            if (SelectedAccount == null)
+            {
+                MessageBox.Show("Please select an account.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var transactionType = SelectedTransactionType == "Deposit" ? "Credit" : "Debit";
+            var newTransaction = new Transakcije
+            {
+                RacunID = SelectedAccount.RacunID,
+                DatumVrijeme = DateTime.Now,
+                Iznos = transactionType == "Credit" ? Amount : -Amount,
+                Vrsta = transactionType,
+                Opis = "User transaction"
+            };
+
+            bool success = await _transakcijeRepository.AddAsync(newTransaction);
+
+            if (success)
+            {
+                await LoadTransactions();
+                MessageBox.Show("Transaction completed successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("Failed to complete the transaction.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private bool FilterTransactions(object obj)
+        {
+            if (obj is Transakcije transaction)
+            {
+                return string.IsNullOrEmpty(FilterText) || transaction.Opis.Contains(FilterText);
+            }
+            return false;
+        }
+
+        private void SortTransactions(object parameter)
+        {
+            if (parameter is string sortBy)
+            {
+                var direction = ListSortDirection.Ascending;
+                if (TransactionsView.SortDescriptions.Any() && TransactionsView.SortDescriptions[0].PropertyName == sortBy)
+                {
+                    direction = TransactionsView.SortDescriptions[0].Direction == ListSortDirection.Ascending ? ListSortDirection.Descending : ListSortDirection.Ascending;
+                }
+
+                TransactionsView.SortDescriptions.Clear();
+                TransactionsView.SortDescriptions.Add(new SortDescription(sortBy, direction));
+            }
+        }
+
+        //Settings
+
         public string SelectedLanguage
         {
             get => _selectedLanguage;
@@ -222,75 +420,10 @@ namespace BankovniSustavApp.ViewModels
             }
         }
 
-        private void InitializeSettingsManager()
-        {
-            bool useRegistry = SelectedStorageMethod == "Windows Registry";
-            _settingsManager = new SettingsManager("settings.ini", useRegistry);
-        }
-
         public string WelcomeMessage
         {
             get => _welcomeMessage;
             set => SetProperty(ref _welcomeMessage, value);
-        }
-
-        public ObservableCollection<Transakcije> Transactions
-        {
-            get => _transactions;
-            set => SetProperty(ref _transactions, value);
-        }
-
-        private async Task GetTransactionById()
-        {
-            var transaction = await _transakcijeRepository.GetByIdAsync(SearchId);
-            Transactions.Clear();
-            if (transaction != null)
-            {
-                Transactions.Add(transaction);
-            }
-            else
-            {
-                MessageBox.Show("Transaction not found.");
-            }
-        }
-
-        private async Task DeleteTransaction()
-        {
-            var transactionToDelete = Transactions.FirstOrDefault(t => t.TransakcijaID == DeleteTransactionId);
-            if (transactionToDelete == null)
-            {
-                MessageBox.Show("Please enter a valid transaction ID to delete.");
-                return;
-            }
-
-            bool result = await _transakcijeRepository.DeleteAsync(transactionToDelete.TransakcijaID);
-            if (result)
-            {
-                Transactions.Remove(transactionToDelete);
-                MessageBox.Show("Transaction deleted successfully.");
-            }
-            else
-            {
-                MessageBox.Show("Failed to delete transaction.");
-            }
-        }
-
-        private void GeneratePdfReport()
-        {
-            var reportService = new ReportGenerationService();
-            reportService.GeneratePdfReport(Transactions, "transactions_report.pdf");
-        }
-
-        private void GenerateRtfReport()
-        {
-            var reportService = new ReportGenerationService();
-            reportService.GenerateRtfReport(Transactions, "transactions_report.rtf");
-        }
-
-        private async Task LoadTransactions()
-        {
-            var transactionsList = await _transakcijeRepository.GetAllAsync();
-            Transactions = new ObservableCollection<Transakcije>(transactionsList);
         }
 
         private void LoadSettings()
@@ -311,62 +444,27 @@ namespace BankovniSustavApp.ViewModels
             MessageBox.Show("Settings have been saved successfully.", "Confirmation", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private async Task AddAccount()
+        private void InitializeSettingsManager()
         {
-            var random = new Random();
-            var newAccount = new Racuni
-            {
-                KorisnikID = CurrentKorisnikId,
-                BrojRacuna = "HR" + random.Next(100000000, 999999999),
-                Stanje = 0,
-                DatumOtvaranja = DateTime.Now,
-                Vrsta = "Savings",
-                Valuta = "HRK"
-            };
-
-            bool success = await _racuniRepository.AddAsync(newAccount);
-
-            if (success)
-            {
-                await LoadUserAccounts();
-                MessageBox.Show("New account added successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("Failed to add new account.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            bool useRegistry = SelectedStorageMethod == "Windows Registry";
+            _settingsManager = new SettingsManager("settings.ini", useRegistry);
         }
 
-        private async Task SubmitTransaction()
+        //Reports
+
+        private void GeneratePdfReport()
         {
-            if (SelectedAccount == null)
-            {
-                MessageBox.Show("Please select an account.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            var transactionType = SelectedTransactionType == "Deposit" ? "Credit" : "Debit";
-            var newTransaction = new Transakcije
-            {
-                RacunID = SelectedAccount.RacunID,
-                DatumVrijeme = DateTime.Now,
-                Iznos = transactionType == "Credit" ? Amount : -Amount,
-                Vrsta = transactionType,
-                Opis = "User transaction"
-            };
-
-            bool success = await _transakcijeRepository.AddAsync(newTransaction);
-
-            if (success)
-            {
-                await LoadTransactions();
-                MessageBox.Show("Transaction completed successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                MessageBox.Show("Failed to complete the transaction.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            var reportService = new ReportGenerationService();
+            reportService.GeneratePdfReport(Transactions, "transactions_report.pdf");
         }
+
+        private void GenerateRtfReport()
+        {
+            var reportService = new ReportGenerationService();
+            reportService.GenerateRtfReport(Transactions, "transactions_report.rtf");
+        }
+
+        //Signature
 
         public string DataToSign { get; set; }
         public byte[] Signature { get; set; }
@@ -432,10 +530,30 @@ namespace BankovniSustavApp.ViewModels
             }
         }
 
+        //Navigation
+
         private void OpenFinnhubView()
         {
             var finnhubView = new FinnhubWindow(_finnhubViewModel);
             finnhubView.Show();
+        }
+
+        private void OpenBankingView()
+        {
+            var bankingView = new BankingWindow(_bankingViewModel);
+            bankingView.Show();
+        }
+
+        private void ShowDialogOne()
+        {
+            var dialog = new DialogOneWindow();
+            dialog.ShowDialog();
+        }
+
+        private void ShowDialogTwo()
+        {
+            var dialog = new DialogTwoWindow();
+            dialog.ShowDialog();
         }
     }
 }

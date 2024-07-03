@@ -175,12 +175,14 @@
     <Compile Include="Repositories\LogoviRepository.cs" />
     <Compile Include="Repositories\KorisnikRepository.cs" />
     <Compile Include="Repositories\IGenericRepository.cs" />
+    <Compile Include="Services\BankingService.cs" />
     <Compile Include="Services\FinhubService.cs" />
     <Compile Include="Services\ReportGenerationService.cs" />
     <Compile Include="Services\ViewModelLocator.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="Services\UserAccountService.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
+    <Compile Include="ViewModels\BankingViewModel.cs" />
     <Compile Include="ViewModels\FinhubViewModel.cs" />
     <Compile Include="Views\RegisterWindow.xaml.cs">
       <DependentUpon>RegisterWindow.xaml</DependentUpon>
@@ -193,6 +195,9 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="Views\FinhubWindow.xaml.cs">
       <DependentUpon>FinhubWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BankingWindow.xaml.cs">
+      <DependentUpon>BankingWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -216,6 +221,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FinhubWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\BankingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -253,6 +262,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BankingLibrary\BankingLibrary.csproj">
+      <Project>{e883e2cd-145e-42e7-a3aa-7bd5b02437e2}</Project>
+      <Name>BankingLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

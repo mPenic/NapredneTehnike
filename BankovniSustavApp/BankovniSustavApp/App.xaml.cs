@@ -43,6 +43,8 @@ namespace BankovniSustavApp
             services.AddSingleton<INavigationService>(provider => new NavigationService(provider));
             services.AddSingleton<FinnhubService>();
             services.AddTransient<FinnhubViewModel>();
+            services.AddSingleton<BankingService>();
+            services.AddTransient<BankingViewModel>();
             services.AddTransient<LoginViewModel>();
             services.AddTransient<RegisterViewModel>();
             services.AddTransient<DashboardViewModel>();

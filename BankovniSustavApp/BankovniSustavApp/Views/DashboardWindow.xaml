@@ -13,6 +13,7 @@
         </Grid.RowDefinitions>
         <TextBlock Text="{Binding WelcomeMessage}" FontSize="24" Grid.Row="0" Margin="10" HorizontalAlignment="Center"/>
         <Button Command="{Binding OpenFinnhubViewCommand}" Content="Open Finnhub Data" Grid.Row="0" Margin="10" HorizontalAlignment="Left" />
+        <Button Command="{Binding OpenBankingViewCommand}" Content="Open REST client for banking" Grid.Row="0" Margin="10" HorizontalAlignment="Right" />
         <TabControl Grid.Row="1" Margin="10">
             <TabItem Header="Account Overview">
                 <Grid>
@@ -33,6 +34,10 @@
                         <TextBlock Text="{Binding SelectedAccount.Vrsta}"/>
                         <TextBlock Text="{Binding SelectedAccount.Valuta}"/>
                         <TextBlock Text="{Binding SelectedAccount.DatumOtvaranja, StringFormat='Opened: {0:d}'}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Grid.Column="1" Margin="421,0,0,0" VerticalAlignment="Bottom">
+                        <Button Command="{Binding ShowDialogOneCommand}" Content="Show Dialog One" Margin="10"/>
+                        <Button Command="{Binding ShowDialogTwoCommand}" Content="Show Dialog Two" Margin="10"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -61,8 +66,10 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Transaction ID" Binding="{Binding TransakcijaID}"/>
                             <DataGridTextColumn Header="Account ID" Binding="{Binding RacunID}"/>
+                            <DataGridTextColumn Header="Broj Racuna" Binding="{Binding BrojRacuna}"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding IznosFormatted}"/>
                             <DataGridTextColumn Header="Date/Time" Binding="{Binding DatumVrijeme}"/>
-                            <DataGridTextColumn Header="Amount" Binding="{Binding Iznos}"/>
+                            <DataGridTextColumn Header="Formatted Date" Binding="{Binding FormattedDate}"/>
                             <DataGridTextColumn Header="Type" Binding="{Binding Vrsta}"/>
                             <DataGridTextColumn Header="Description" Binding="{Binding Opis}"/>
                         </DataGrid.Columns>
@@ -82,7 +89,6 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-
             <TabItem Header="Settings">
                 <StackPanel>
                     <TextBlock Text="Language" />
@@ -96,25 +102,26 @@
                     <Button Command="{Binding SaveSettingsCommand}" Content="Save Settings" />
                 </StackPanel>
             </TabItem>
-
             <TabItem Header="Digital Signature">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBox Grid.Row="0" Width="200" Margin="5"
-                 Text="{Binding DataToSign, UpdateSourceTrigger=PropertyChanged}"
-                 ToolTip="Enter data to sign"/>
-                    <Button Grid.Row="1" Width="200" Margin="5"
-                Content="Sign Data" Command="{Binding SignDataCommand}"/>
-                    <TextBox Grid.Row="2" Width="200" Margin="5"
-                 Text="{Binding DataToVerify, UpdateSourceTrigger=PropertyChanged}"
-                 ToolTip="Enter data to verify"/>
-                    <Button Grid.Row="3" Width="200" Margin="5"
-                Content="Verify Signature" Command="{Binding VerifySignatureCommand}"/>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="250">
+                        <TextBlock Text="Enter data to sign" FontWeight="Bold" Margin="0,10,0,5" HorizontalAlignment="Center"/>
+                        <TextBox Width="200" Margin="0,0,0,10"
+                     Text="{Binding DataToSign, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Enter data to sign"/>
+                        <Button Width="200" Margin="0,0,0,20"
+                    Content="Sign Data" Command="{Binding SignDataCommand}"/>
+
+                        <TextBlock Text="Enter data to verify" FontWeight="Bold" Margin="0,10,0,5" HorizontalAlignment="Center"/>
+                        <TextBox Width="200" Margin="0,0,0,10"
+                     Text="{Binding DataToVerify, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="Enter data to verify"/>
+                        <Button Width="200" Margin="0,0,0,20"
+                    Content="Verify Signature" Command="{Binding VerifySignatureCommand}"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>

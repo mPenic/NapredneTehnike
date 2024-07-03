@@ -1,0 +1,24 @@
+﻿<Window x:Class="BankovniSustavApp.Views.BankingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Banking Service" Height="450" Width="800">
+    <Grid>
+        <StackPanel Margin="20">
+            <Button Command="{Binding FetchAccountsCommand}" Content="Fetch Accounts" Margin="0,0,0,10"/>
+            <TextBlock Text="Accounts:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock Text="{Binding Accounts}" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+            <Button Command="{Binding FetchTransactionsCommand}" Content="Fetch Transactions" Margin="0,10,0,10"/>
+            <TextBlock Text="Transactions:" FontWeight="Bold" Margin="0,0,0,5"/>
+            <TextBlock Text="{Binding Transactions}" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+            <TextBlock Text="Source Account ID:" FontWeight="Bold" Margin="0,10,0,5"/>
+            <TextBox Text="{Binding SourceAccountId}" Margin="0,0,0,10"/>
+            <TextBlock Text="Destination Account ID:" FontWeight="Bold" Margin="0,10,0,5"/>
+            <TextBox Text="{Binding DestinationAccountId}" Margin="0,0,0,10"/>
+            <TextBlock Text="Transfer Amount:" FontWeight="Bold" Margin="0,10,0,5"/>
+            <TextBox Text="{Binding TransferAmount}" Margin="0,0,0,10"/>
+            <Button Command="{Binding TransferFundsCommand}" Content="Transfer Funds" Margin="0,20,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

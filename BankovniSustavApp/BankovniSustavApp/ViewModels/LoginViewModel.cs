@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using BankingLibrary;
 
 namespace BankovniSustavApp.ViewModels
 {
@@ -17,6 +18,7 @@ namespace BankovniSustavApp.ViewModels
         private string _email;
         private SecureString _securePassword;
         private readonly INavigationService _navigationService;
+        private string _welcomeMessage;
 
         public ICommand LoginCommand { get; }
         public ICommand NavigateToRegisterCommand { get; }
@@ -27,6 +29,8 @@ namespace BankovniSustavApp.ViewModels
             _navigationService = navigationService;
             LoginCommand = new RelayCommand(async () => await ExecuteLogin(), CanExecuteLogin);
             NavigateToRegisterCommand = new RelayCommand(() => _navigationService.NavigateToRegister());
+
+            WelcomeMessage = ResourceAccessor.GetStringResource("WelcomeMessage");
         }
 
         public string Email
@@ -35,6 +39,16 @@ namespace BankovniSustavApp.ViewModels
             set
             {
                 _email = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string WelcomeMessage
+        {
+            get => _welcomeMessage;
+            set
+            {
+                _welcomeMessage = value;
                 OnPropertyChanged();
             }
         }

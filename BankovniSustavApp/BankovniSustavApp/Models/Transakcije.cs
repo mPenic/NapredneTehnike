@@ -15,6 +15,14 @@ namespace BankovniSustavApp.Models
         public decimal Iznos { get; set; }
         public string Vrsta { get; set; }
         public string Opis { get; set; }
+
+        // Calculated field
+        public string FormattedDate => DatumVrijeme.ToString("dd MMM yyyy");
+        public string IznosFormatted { get; set; }
+
+        // Lookup field
+        public string BrojRacuna { get; set; }
     }
+
 }
 

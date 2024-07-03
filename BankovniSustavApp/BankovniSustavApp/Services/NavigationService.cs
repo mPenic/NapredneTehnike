@@ -16,6 +16,7 @@ namespace BankovniSustavApp.Services
         void NavigateToRegister();
         void NavigateToDashboard();
         void NavigateToFinnhub();
+        void NavigateToBanking();
         // Add other navigation methods as needed
     }
 
@@ -103,6 +104,17 @@ namespace BankovniSustavApp.Services
                 CloseAllWindowsExcept(finnhubWindow);
             });
         }
+
+        public void NavigateToBanking()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var bankingViewModel = _serviceProvider.GetService<BankingViewModel>();
+                var bankingWindow = new BankingWindow(bankingViewModel);
+                bankingWindow.Show();
+            });
+        }
+
         // Add other navigation methods as needed
 
         private void CloseAllWindowsExcept(Window windowToKeep)
